@@ -52,17 +52,14 @@ class Coupon(CouponBase):
     created_at: datetime
 
 # 従業員（Employee）
-class EmployeeBase(ORMBase):
+class Employee(ORMBase):
+    enp_cd: str
     name: str
-    password: Optional[str]
-    role: str
+    role: Optional[str]
     is_active: bool
 
-class EmployeeCreate(EmployeeBase):
-    enp_cd: str
-
-class Employee(EmployeeBase):
-    enp_cd: str
+class EmployeeCreate(Employee):
+    pass
 
 # 注文詳細（OrderDetail）
 class OrderDetailBase(ORMBase):
@@ -71,7 +68,8 @@ class OrderDetailBase(ORMBase):
     prd_name: str
     prd_price: int
     quantity: int
-    tax_cd: str
+    amt: int
+    tax_rate: float = 0.1
 
 class OrderDetailCreate(OrderDetailBase):
     trd_id: int
@@ -118,5 +116,5 @@ class CartItem(BaseModel):
     prd_id: int
     code: str
     name: str
-    price: float
+    price: int
     quantity: int

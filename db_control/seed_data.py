@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from connect import SessionLocal
-from mymodels import Product, Employee
+from .connect import SessionLocal
+from .mymodels import Product, Employee
+
 
 def seed_products(db: Session):
     products = [
@@ -34,26 +35,26 @@ def seed_products(db: Session):
         else:
             print(f"スキップ: {prod['code']}（既に存在）")
 
-def seed_guest_employee(db: Session):
-    guest_code = "GUEST00001"
-    existing = db.query(Employee).filter(Employee.enp_cd == guest_code).first()
-    if not existing:
-        guest = Employee(
-            enp_cd=guest_code,
-            name="ゲストユーザー",
-            password=None,
-            role="guest",
-            is_active=True
-        )
-        db.add(guest)
-        print(f"✓ ゲスト店員コード {guest_code} を登録しました")
-    else:
-        print(f"スキップ: ゲスト店員コード {guest_code} は既に存在します")
+def seed_employees(db: Session):
+    employees = [
+        {"enp_cd": "GUEST00001", "name": "ゲストユーザー", "password": None, "role": "guest", "is_active": True},
+        {"enp_cd": "EMP00001", "name": "田中", "password": "password1", "role": "staff", "is_active": True},
+        {"enp_cd": "EMP00002", "name": "鈴木", "password": "password2", "role": "staff", "is_active": True},
+    ]
+
+    for emp in employees:
+        existing = db.query(Employee).filter(Employee.enp_cd == emp["enp_cd"]).first()
+        if not existing:
+            db_employee = Employee(**emp)
+            db.add(db_employee)
+            print(f"✓ 追加: {emp['name']}（{emp['enp_cd']}）")
+        else:
+            print(f"スキップ: {emp['enp_cd']}（既に存在）")
 
 if __name__ == "__main__":
     db = SessionLocal()
     try:
-        seed_guest_employee(db)
+        seed_employees(db)
         seed_products(db)
         db.commit()
         print("✅ 初期データ登録が完了しました。")
