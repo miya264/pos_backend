@@ -6,6 +6,7 @@ import db_control.schemas as schemas
 from db_control.connect import engine, get_db
 from typing import Optional, List
 from datetime import datetime
+import math
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -14,7 +15,7 @@ app = FastAPI()
 # CORSミドルウェアを追加
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # フロントエンドのURL
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,28 +62,19 @@ def create_transaction(
     """
 
     try:
-        # 店員コードを決定
-        employee_code = emp_cd if emp_cd else GUEST_CODE
-
-        # 安全確認：DBに存在する店員コードかチェック
-        employee = db.query(models.Employee).filter(models.Employee.enp_cd == employee_code).first()
-        if not employee:
-            raise HTTPException(status_code=400, detail=f"店員コード '{employee_code}' は存在しません")
-
-        # 合計金額の算出（税抜き）
+        # 合計金額の計算
         total_amount = sum(item.price * item.quantity for item in items)
-        # 税込み合計金額の算出（10%固定）
-        total_amount_with_tax = int(total_amount * 1.1)
+        total_amount_with_tax = math.floor(total_amount * 1.1)  # 税率10%
 
         # 注文（Order）の作成
         order = models.Order(
-            datetime=datetime.now(),
-            enp_cd=employee_code,
-            store_cd="A001",  # 仮の店舗コード
-            pos_no="P01",     # POSナンバー（3文字以内）
-            total_amt=total_amount_with_tax,  # 税込み合計
-            ttl_amt_ex_tax=total_amount,      # 税抜き合計
-            final_amt=total_amount_with_tax   # 最終金額（割引なしの場合は税込み合計と同じ）
+            datetime=datetime.now(),  # 現在時刻を設定
+            enp_cd=emp_cd or "GUEST00001",
+            store_cd="A001",
+            pos_no="P01",
+            total_amt=total_amount_with_tax,
+            ttl_amt_ex_tax=total_amount,
+            final_amt=total_amount_with_tax
         )
 
         db.add(order)
