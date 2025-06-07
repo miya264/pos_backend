@@ -29,7 +29,8 @@ engine = create_engine(
     connect_args={
         "ssl": {
             "ssl_ca": str(ssl_cert)
-        }
+        },
+        "init_command": "SET time_zone = '+09:00'"
     },
     echo=True,
     pool_pre_ping=True,

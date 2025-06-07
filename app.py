@@ -7,6 +7,7 @@ from db_control.connect import engine, get_db
 from typing import Optional, List
 from datetime import datetime
 import math
+from pytz import timezone
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -66,9 +67,13 @@ def create_transaction(
         total_amount = sum(item.price * item.quantity for item in items)
         total_amount_with_tax = math.floor(total_amount * 1.1)  # 税率10%
 
+        # 日本時間のタイムスタンプを取得
+        jst = timezone('Asia/Tokyo')
+        current_time = datetime.now(jst)
+
         # 注文（Order）の作成
         order = models.Order(
-            datetime=datetime.now(),  # 現在時刻を設定
+            datetime=current_time,  # JSTで設定
             enp_cd=emp_cd or "GUEST00001",
             store_cd="A001",
             pos_no="P01",
