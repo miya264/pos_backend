@@ -27,13 +27,20 @@ load_dotenv(dotenv_path=env_path)
 # DATABASE_URL = f"sqlite:///{base_path}/pos.db"
 
 # Supabase接続情報
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_ANON_KEY = os.getenv('SUPABASE_ANON_KEY')  # フロントエンド用
-SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')  # バックエンド用
-SUPABASE_DB_PASSWORD = os.getenv('SUPABASE_DB_PASSWORD')
+# SUPABASE_URL = os.getenv('SUPABASE_URL')
+# SUPABASE_ANON_KEY = os.getenv('SUPABASE_ANON_KEY')  # フロントエンド用
+# SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')  # バックエンド用
+# SUPABASE_DB_PASSWORD = os.getenv('SUPABASE_DB_PASSWORD')
+
+user = os.getenv("SUPABASE_DB_USER")
+password = os.getenv("SUPABASE_DB_PASSWORD")
+host = os.getenv("SUPABASE_DB_HOST")
+port = os.getenv("SUPABASE_DB_PORT")
+dbname = os.getenv("SUPABASE_DB_NAME")
 
 # Supabase接続URL構築（PostgreSQL直接接続用）
-DATABASE_URL = f"postgresql://postgres:{SUPABASE_DB_PASSWORD}@db.{SUPABASE_URL.split('//')[1]}:5432/postgres"
+# DATABASE_URL = f"postgresql://postgres:{SUPABASE_DB_PASSWORD}@db.{SUPABASE_URL.split('//')[1]}:5432/postgres"
+DATABASE_URL = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
 
 # SQLAlchemy エンジンの作成
 engine = create_engine(
