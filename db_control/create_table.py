@@ -1,8 +1,5 @@
-from connect import engine
-from mymodels import Base
-
-# テーブルを削除
-Base.metadata.drop_all(bind=engine)
+from .connect import engine
+from .mymodels import Base
 
 # テーブルを作成
 Base.metadata.create_all(bind=engine)
